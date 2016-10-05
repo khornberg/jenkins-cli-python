@@ -249,6 +249,13 @@ class JenkinsCli(object):
         else:
             print("%s job is not running" % job_name)
 
+    def retry(self, args):
+        job_name = self._check_job(args.job_name)
+        info = self.jenkins.get_job_info(job_name, 1)
+        build_number = info['lastBuild'].get('number')
+        retry_status = self.jenkins.retry_build(job_name, build_number)
+        print("%s: %s" % (job_name, 'retried' if not retry_status else retry_status))
+
     def _get_build_number(self, job_name, build_number):
         info = self.jenkins.get_job_info(job_name)
         if not info['lastBuild']:
